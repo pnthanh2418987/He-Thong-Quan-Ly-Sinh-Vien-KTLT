@@ -23,7 +23,7 @@ struct Student {
 vector<Student> studentList;
 
 // ==========================================
-// CÁC HÀM TIỆN ÍCH & NGHIỆP VỤ
+// 2. CÁC HÀM TIỆN ÍCH & NGHIỆP VỤ
 // ==========================================
 string classifyStudent(double gpa) {
     if (gpa >= 3.6) return "Xuat sac";
@@ -47,11 +47,19 @@ bool isAllDigits(const string& str) {
 }
 
 // ==========================================
-// MODULE 5: FILE I/O
+// MODULE 5: FILE I/O (LƯU TRỮ CHÍNH)
 // ==========================================
 void loadFromFile() {
     ifstream file("students.txt");
-    if (!file.is_open()) return;
+    
+    // Nếu không tìm thấy file, in ra chữ to đùng để báo động
+    if (!file.is_open()) {
+        cout << "\n[DEBUG] LOI: KHONG TIM THAY FILE 'students.txt' o thu muc hien tai!\n";
+        return;
+    }
+
+    // Nếu tìm thấy, báo cho chúng ta biết
+    cout << "\n[DEBUG] DA TIM THAY FILE! Dang doc du lieu...\n";
 
     studentList.clear();
     Student st;
@@ -59,9 +67,10 @@ void loadFromFile() {
         file.ignore();
         getline(file, st.name);
         getline(file, st.className);
+        getline(file, st.schoolName);
         getline(file, st.dob);
         file >> st.gpa;
-        file.ignore(); // Bỏ qua ký tự newline sau GPA
+        file.ignore(); 
     }
     file.close();
 }
@@ -72,6 +81,7 @@ void saveToFile() {
         file << st.id << "\n"
              << st.name << "\n"
              << st.className << "\n"
+             << st.schoolName << "\n" 
              << st.dob << "\n"
              << st.gpa << "\n";
     }
@@ -79,13 +89,73 @@ void saveToFile() {
 }
 
 // ==========================================
+// MODULE MỞ RỘNG: IMPORT DỮ LIỆU TỪ FILE KHÁC
+// ==========================================
+void importFromFile(const string& filename) {
+    ifstream file(filename);
+    if (!file.is_open()) {
+        cout << "Loi: Khong the mo file " << filename << "!\n";
+        return;
+    }
+
+    Student st;
+    int addedCount = 0;
+    while (file >> st.id) {
+        file.ignore();
+        getline(file, st.name);
+        getline(file, st.className);
+        getline(file, st.schoolName);
+        getline(file, st.dob);
+        file >> st.gpa;
+        file.ignore();
+
+        // Kiểm tra trùng lặp trước khi thêm
+        bool isDuplicate = false;
+        for (const auto& s : studentList) {
+            if (s.id == st.id) {
+                isDuplicate = true;
+                break;
+            }
+        }
+
+        // Chỉ thêm sinh viên nếu MSSV chưa tồn tại trong danh sách
+        if (!isDuplicate) {
+            studentList.push_back(st);
+            addedCount++;
+        }
+    }
+    file.close();
+    cout << "=> Da them thanh cong " << addedCount << " sinh vien moi tu file " << filename << "!\n";
+}
+
+// ==========================================
 // MODULE 1: QUẢN LÝ SINH VIÊN (CRUD) 
 // ==========================================
 void addStudent() {
-    Student st;
     cout << "\n--- THEM SINH VIEN ---\n";
+    cout << "Chon phuong thuc nhap:\n";
+    cout << "1. Nhap tu ban phim\n";
+    cout << "2. Nhap them tu file (.txt)\n";
+    cout << "Lua chon (1-2): ";
     
-    // Vòng lặp yêu cầu nhập MSSV đúng định dạng và không trùng lặp
+    int choice;
+    while (!(cin >> choice) || (choice < 1 || choice > 2)) {
+        cin.clear();
+        cin.ignore(10000, '\n');
+        cout << "Lua chon khong hop le. Vui long nhap lai (1-2): ";
+    }
+
+    // Lựa chọn 2: Sử dụng tính năng Import
+    if (choice == 2) {
+        string filename;
+        cout << "Nhap ten file can tai len (vd: input_lopA.txt): ";
+        cin >> filename;
+        importFromFile(filename);
+        return;
+    }
+
+    // Lựa chọn 1: Nhập thủ công từ bàn phím
+    Student st;
     while (true) {
         cout << "Nhap MSSV (chi gom so, vd 202418987): "; 
         cin >> st.id;
@@ -104,16 +174,16 @@ void addStudent() {
             }
         }
         
-        if (!isDuplicate) break; // Thoát vòng lặp nếu MSSV hợp lệ
+        if (!isDuplicate) break;
     }
     
     cin.ignore();
     cout << "Nhap Ho va Ten: "; getline(cin, st.name); trim(st.name);
     cout << "Nhap Lop: "; getline(cin, st.className); trim(st.className);
-    cout << "Nhap Ten truong: "; getline(cin, st.schoolName); trim(st.schoolName);
+    cout << "Nhap Khoa/Vien/Truong truc thuoc: "; 
+    getline(cin, st.schoolName); trim(st.schoolName);
     cout << "Nhap Ngay sinh (DD/MM/YYYY): "; getline(cin, st.dob); trim(st.dob);
     
-    // Vòng lặp kiểm tra GPA
     while(true) {
         cout << "Nhap GPA (0.0 - 4.0): "; cin >> st.gpa;
         if(st.gpa >= 0.0 && st.gpa <= 4.0) break;
@@ -133,6 +203,7 @@ void displayStudents() {
     cout << left << setw(15) << "MSSV" 
          << setw(25) << "Ho va Ten" 
          << setw(15) << "Lop" 
+         << setw(25) << "Khoa/Vien/Truong" 
          << setw(15) << "Ngay Sinh" 
          << setw(10) << "GPA" 
          << "Xep loai" << "\n";
@@ -142,6 +213,7 @@ void displayStudents() {
         cout << left << setw(15) << st.id 
              << setw(25) << st.name 
              << setw(15) << st.className 
+             << setw(25) << st.schoolName 
              << setw(15) << st.dob 
              << setw(10) << fixed << setprecision(2) << st.gpa 
              << classifyStudent(st.gpa) << "\n";
@@ -246,7 +318,7 @@ void showMenu() {
 }
 
 int main() {
-    loadFromFile();
+    loadFromFile(); // Luôn lấy dữ liệu gốc từ students.txt
     int choice;
     
     do {
@@ -264,10 +336,10 @@ int main() {
             case 3: deleteStudent(); break;
             case 4: findByName(); break;
             case 5: sortByGPA(); break;
-            case 6: sortByName(); break; // Sửa lỗi gọi sai hàm
-            case 7: statistics(); break; // Bổ sung case 7 cho Thống kê
+            case 6: sortByName(); break;
+            case 7: statistics(); break;
             case 0: 
-                saveToFile();
+                saveToFile(); // Chốt sổ toàn bộ về lại students.txt
                 cout << "Da luu du lieu. Thoat chuong trinh...\n"; 
                 break;
             default: cout << "Lua chon khong hop le!\n";
