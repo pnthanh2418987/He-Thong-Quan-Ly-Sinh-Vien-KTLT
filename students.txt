@@ -1,30 +1,30 @@
-202400101
+202418001
 Nguyen Van An
-K65-CNTT
-15/08/2002
+IT1-01
+Truong Cong nghe Thong tin va Truyen thong
+15/08/2005
 3.8
-202400102
+202418002
 Tran Thi Binh
-K65-KHMT
-22/10/2002
+ME-02
+Truong Dien va Co khi
+22/10/2005
 3.4
-202400103
+202418003
 Le Hoang Cuong
-K65-HTTT
-05/01/2002
+EE-E8
+Truong Dien va Co khi
+05/01/2005
 2.6
-202400104
+202418004
 Pham Thi Dung
-K65-KTPM
-12/12/2002
-1.8
-202400105
-Vu Van Em
-K65-CNTT
-30/04/2002
+MI1-03
+Khoa Toan Tin
+12/12/2005
 2.1
-202400106
-Doan Kien Quoc
-K65-KHMT
-02/09/2002
-3.1
+202418005
+Vu Van Em
+CH-01
+Truong Hoa va Khoa hoc Su song
+30/04/2005
+1.8
