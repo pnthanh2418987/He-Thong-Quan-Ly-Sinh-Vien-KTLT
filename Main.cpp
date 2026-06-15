@@ -4,17 +4,18 @@
 #include <fstream>
 #include <algorithm>
 #include <iomanip>
+#include <cctype>
 
 using namespace std;
 
 // ==========================================
 // 1. CẤU TRÚC DỮ LIỆU
 // ==========================================
-// Định nghĩa cấu trúc Sinh viên
 struct Student {
-    string id;          // MSSV
+    string id;          // MSSV (Giữ kiểu string để tránh tràn số và giữ số 0 ở đầu)
     string name;        // Họ và tên
     string className;   // Lớp
+    string schoolName;  // Tên trường
     string dob;         // Ngày sinh
     double gpa;         // Điểm GPA
 };
@@ -24,7 +25,6 @@ vector<Student> studentList;
 // ==========================================
 // CÁC HÀM TIỆN ÍCH & NGHIỆP VỤ
 // ==========================================
-// Hàm xếp loại học lực dựa trên GPA 
 string classifyStudent(double gpa) {
     if (gpa >= 3.6) return "Xuat sac";
     if (gpa >= 3.2) return "Gioi";
@@ -33,10 +33,17 @@ string classifyStudent(double gpa) {
     return "Yeu";
 }
 
-// Hàm chuẩn hóa chuỗi (xóa khoảng trắng thừa) 
 void trim(string &s) {
     s.erase(0, s.find_first_not_of(" \t\n\r\f\v"));
     s.erase(s.find_last_not_of(" \t\n\r\f\v") + 1);
+}
+
+// Hàm kiểm tra một chuỗi có chứa toàn số hay không
+bool isAllDigits(const string& str) {
+    for (char c : str) {
+        if (!isdigit(c)) return false;
+    }
+    return true;
 }
 
 // ==========================================
@@ -49,12 +56,12 @@ void loadFromFile() {
     studentList.clear();
     Student st;
     while (file >> st.id) {
-        file.ignore(); // Bỏ qua ký tự newline
+        file.ignore();
         getline(file, st.name);
         getline(file, st.className);
         getline(file, st.dob);
         file >> st.gpa;
-        studentList.push_back(st);
+        file.ignore(); // Bỏ qua ký tự newline sau GPA
     }
     file.close();
 }
@@ -77,25 +84,40 @@ void saveToFile() {
 void addStudent() {
     Student st;
     cout << "\n--- THEM SINH VIEN ---\n";
-    cout << "Nhap MSSV: "; cin >> st.id;
     
-    // Kiểm tra trùng lặp MSSV 
-    for (const auto& s : studentList) {
-        if (s.id == st.id) {
-            cout << "Loi: MSSV da ton tai!\n";
-            return;
+    // Vòng lặp yêu cầu nhập MSSV đúng định dạng và không trùng lặp
+    while (true) {
+        cout << "Nhap MSSV (chi gom so, vd 202418987): "; 
+        cin >> st.id;
+        
+        if (!isAllDigits(st.id)) {
+            cout << "Loi: MSSV chi duoc chua cac chu so! Vui long nhap lai.\n";
+            continue;
         }
+
+        bool isDuplicate = false;
+        for (const auto& s : studentList) {
+            if (s.id == st.id) {
+                cout << "Loi: MSSV da ton tai! Vui long nhap ma khac.\n";
+                isDuplicate = true;
+                break;
+            }
+        }
+        
+        if (!isDuplicate) break; // Thoát vòng lặp nếu MSSV hợp lệ
     }
     
     cin.ignore();
     cout << "Nhap Ho va Ten: "; getline(cin, st.name); trim(st.name);
     cout << "Nhap Lop: "; getline(cin, st.className); trim(st.className);
+    cout << "Nhap Ten truong: "; getline(cin, st.schoolName); trim(st.schoolName);
     cout << "Nhap Ngay sinh (DD/MM/YYYY): "; getline(cin, st.dob); trim(st.dob);
-    cout << "Nhap GPA (0.0 - 4.0): "; cin >> st.gpa;
     
-    if(st.gpa < 0.0 || st.gpa > 4.0) {
-        cout << "Loi: GPA khong hop le!\n";
-        return;
+    // Vòng lặp kiểm tra GPA
+    while(true) {
+        cout << "Nhap GPA (0.0 - 4.0): "; cin >> st.gpa;
+        if(st.gpa >= 0.0 && st.gpa <= 4.0) break;
+        cout << "Loi: GPA khong hop le! Vui long nhap lai.\n";
     }
 
     studentList.push_back(st);
@@ -143,7 +165,6 @@ void deleteStudent() {
 // ==========================================
 // MODULE 3: TÌM KIẾM
 // ==========================================
-// Áp dụng tìm kiếm tuần tự (Linear Search) theo tên 
 void findByName() {
     string keyword;
     cout << "Nhap ten can tim: ";
@@ -165,11 +186,18 @@ void findByName() {
 // MODULE 4: SẮP XẾP & THỐNG KÊ 
 // ==========================================
 void sortByGPA() {
-    // Sử dụng thuật toán sắp xếp của thư viện algorithm (ưu tiên O(n log n) tương tự Merge Sort) [cite: 818]
     sort(studentList.begin(), studentList.end(), [](const Student& a, const Student& b) {
-        return a.gpa > b.gpa; // Giảm dần
+        return a.gpa > b.gpa;
     });
     cout << "=> Da sap xep danh sach theo GPA giam dan!\n";
+    displayStudents();
+}
+
+void sortByName() {
+    sort(studentList.begin(), studentList.end(), [](const Student& a, const Student& b) {
+        return a.name < b.name;
+    });
+    cout << "=> Da sap xep danh sach theo Ten tang dan!\n";
     displayStudents();
 }
 
@@ -210,14 +238,15 @@ void showMenu() {
     cout << "3. Xoa sinh vien\n";
     cout << "4. Tim kiem theo Ten\n";
     cout << "5. Sap xep danh sach theo GPA\n";
-    cout << "6. Thong ke hoc luc\n";
+    cout << "6. Sap xep danh sach theo Ten\n";
+    cout << "7. Thong ke hoc luc\n";
     cout << "0. Luu va Thoat\n";
     cout << "========================================\n";
-    cout << "Nhap lua chon cua ban (0-6): ";
+    cout << "Nhap lua chon cua ban (0-7): ";
 }
 
 int main() {
-    loadFromFile(); // Tự động nạp dữ liệu khi khởi động chương trình
+    loadFromFile();
     int choice;
     
     do {
@@ -235,9 +264,10 @@ int main() {
             case 3: deleteStudent(); break;
             case 4: findByName(); break;
             case 5: sortByGPA(); break;
-            case 6: statistics(); break;
+            case 6: sortByName(); break; // Sửa lỗi gọi sai hàm
+            case 7: statistics(); break; // Bổ sung case 7 cho Thống kê
             case 0: 
-                saveToFile(); // Lưu dữ liệu trước khi thoát
+                saveToFile();
                 cout << "Da luu du lieu. Thoat chuong trinh...\n"; 
                 break;
             default: cout << "Lua chon khong hop le!\n";
