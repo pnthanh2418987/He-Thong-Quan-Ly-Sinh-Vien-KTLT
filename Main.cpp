@@ -51,29 +51,26 @@ bool isAllDigits(const string& str) {
 // ==========================================
 void loadFromFile() {
     ifstream file("students.txt");
-    
-    // Nếu không tìm thấy file, in ra chữ to đùng để báo động
-    if (!file.is_open()) {
-        cout << "\n[DEBUG] LOI: KHONG TIM THAY FILE 'students.txt' o thu muc hien tai!\n";
-        return;
-    }
-
-    // Nếu tìm thấy, báo cho chúng ta biết
-    cout << "\n[DEBUG] DA TIM THAY FILE! Dang doc du lieu...\n";
+    if (!file.is_open()) return;
 
     studentList.clear();
     Student st;
+    
+    // Đọc MSSV, nếu thành công thì chạy vào trong vòng lặp
     while (file >> st.id) {
-        file.ignore();
-        getline(file, st.name);
-        getline(file, st.className);
-        getline(file, st.schoolName);
-        getline(file, st.dob);
+        file.ignore(10000, '\n');
+        getline(file, st.name);      trim(st.name);
+        getline(file, st.className); trim(st.className);
+        getline(file, st.schoolName);trim(st.schoolName);
+        getline(file, st.dob);       trim(st.dob);
         file >> st.gpa;
-        file.ignore(); 
-    }
-    file.close();
+        file.ignore(10000, '\n');
+        studentList.push_back(st);
 }
+    file.close();
+    }
+
+
 
 void saveToFile() {
     ofstream file("students.txt");
@@ -199,26 +196,26 @@ void displayStudents() {
         cout << "\nDanh sach sinh vien trong!\n";
         return;
     }
-    cout << "\n" << string(90, '-') << "\n";
+    cout << "\n" << string(135, '-') << "\n";
     cout << left << setw(15) << "MSSV" 
          << setw(25) << "Ho va Ten" 
          << setw(15) << "Lop" 
-         << setw(25) << "Khoa/Vien/Truong" 
+         << setw(45) << "Khoa/Vien/Truong" 
          << setw(15) << "Ngay Sinh" 
          << setw(10) << "GPA" 
          << "Xep loai" << "\n";
-    cout << string(90, '-') << "\n";
+    cout << string(135, '-') << "\n";
     
     for (const auto& st : studentList) {
         cout << left << setw(15) << st.id 
              << setw(25) << st.name 
              << setw(15) << st.className 
-             << setw(25) << st.schoolName 
+             << setw(45) << st.schoolName 
              << setw(15) << st.dob 
              << setw(10) << fixed << setprecision(2) << st.gpa 
              << classifyStudent(st.gpa) << "\n";
     }
-    cout << string(90, '-') << "\n";
+    cout << string(135, '-') << "\n";
 }
 
 void deleteStudent() {
