@@ -11,7 +11,7 @@ using namespace std;
 struct ClassInfo { string classID, className, homeroomTeacher, teacherID, teacherEmail; };
 struct ClassNode { ClassInfo data; ClassNode* next; };
 
-struct Student { string id, name, classID, schoolName, dob; }; 
+struct Student { string id, name, classID, schoolName, dob; }; // Không còn lưu GPA tĩnh
 struct StudentNode { Student data; StudentNode* next; };
 
 struct Course { string courseID, courseName; int credits; };

@@ -1,0 +1,12 @@
+IT1110
+Tin hoc dai cuong
+3
+MI1111
+Giai tich 1
+4
+MI2010
+Phuong trinh vi phan
+3
+ME2020
+Co hoc ky thuat
+3
