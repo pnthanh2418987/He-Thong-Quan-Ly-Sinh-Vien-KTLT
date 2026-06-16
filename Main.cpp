@@ -231,6 +231,52 @@ void deleteStudent() {
     cout << "Loi: Khong tim thay sinh vien co MSSV " << id << "\n";
 }
 
+void updateStudent() {
+    string id;
+    cout << "\n--- CAP NHAT THONG TIN SINH VIEN ---\n";
+    cout << "Nhap MSSV can sua: ";
+    cin >> id;
+
+    for (auto &st : studentList) {
+        if (st.id == id) {
+
+            cin.ignore();
+
+            cout << "Nhap Ho va Ten moi: ";
+            getline(cin, st.name);
+            trim(st.name);
+
+            cout << "Nhap Lop moi: ";
+            getline(cin, st.className);
+            trim(st.className);
+
+            cout << "Nhap Ngay sinh moi (DD/MM/YYYY): ";
+            getline(cin, st.dob);
+            trim(st.dob);
+
+            while (true) {
+                cout << "Nhap GPA moi (0.0 - 4.0): ";
+
+                if (!(cin >> st.gpa)) {
+                    cin.clear();
+                    cin.ignore(10000, '\n');
+                    cout << "GPA phai la so!\n";
+                    continue;
+                }
+
+                if (st.gpa >= 0.0 && st.gpa <= 4.0)
+                    break;
+
+                cout << "GPA phai trong khoang 0.0 - 4.0!\n";
+            }
+
+            cout << "=> Cap nhat sinh vien thanh cong!\n";
+            return;
+        }
+    }
+
+    cout << "Loi: Khong tim thay sinh vien co MSSV " << id << "\n";
+}
 // ==========================================
 // MODULE 3: TÌM KIẾM
 // ==========================================
@@ -309,9 +355,10 @@ void showMenu() {
     cout << "5. Sap xep danh sach theo GPA\n";
     cout << "6. Sap xep danh sach theo Ten\n";
     cout << "7. Thong ke hoc luc\n";
+    cout << "8. Sua sinh vien\n";
     cout << "0. Luu va Thoat\n";
     cout << "========================================\n";
-    cout << "Nhap lua chon cua ban (0-7): ";
+    cout << "Nhap lua chon cua ban (0-8): ";
 }
 
 int main() {
@@ -335,6 +382,7 @@ int main() {
             case 5: sortByGPA(); break;
             case 6: sortByName(); break;
             case 7: statistics(); break;
+            case 8: updateStudent(); break;
             case 0: 
                 saveToFile(); // Chốt sổ toàn bộ về lại students.txt
                 cout << "Da luu du lieu. Thoat chuong trinh...\n"; 
