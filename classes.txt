@@ -1,0 +1,30 @@
+IT1-01
+Cong Nghe Thong Tin 01
+Co Nguyen Thuy Linh
+GV001
+linh.nt@sis.hust.edu.vn
+ME-02
+Co Khi 02
+Thay Pham Tuan Anh
+GV002
+anh.pt@sis.hust.edu.vn
+EE-E8
+Ky thuat Dien 08
+Thay Tran Quang Binh
+GV003
+binh.tq@sis.hust.edu.vn
+MI1-03
+Toan Tin 03
+Co Le Thi Lan
+GV004
+lan.lt@sis.hust.edu.vn
+CH-01
+Hoa Hoc 01
+Thay Hoang Van Cuong
+GV005
+cuong.hv@sis.hust.edu.vn
+MI04-K69
+Toan Tin 04 K69
+Co Tran Thi Mai
+GV006
+mai.tt@sis.hust.edu.vn
