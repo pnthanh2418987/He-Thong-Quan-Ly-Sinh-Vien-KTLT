@@ -5,30 +5,69 @@
 
 using namespace std;
 
-// ==========================================
-// 1. CẤU TRÚC DỮ LIỆU TỰ CÀI ĐẶT (4 BẢNG LINKED LIST)
-// ==========================================
-struct ClassInfo { string classID, className, homeroomTeacher, teacherID, teacherEmail; };
-struct ClassNode { ClassInfo data; ClassNode* next; };
+// 1. CẤU TRÚC DỮ LIỆU (4 LINKED LIST) 
 
-struct Student { string id, name, classID, schoolName, dob; }; 
-struct StudentNode { Student data; StudentNode* next; };
+// Áp dụng kiến thức môn CSDL để tạo 4 bảng: ClassInfo (Lớp học),Student (Sinh viên), Course (Môn học), Grade (Điểm).
+// Dùng Linked List để lưu trữ dữ liệu.
 
-struct Course { string courseID, courseName; int credits; };
-struct CourseNode { Course data; CourseNode* next; };
+struct ClassInfo { 
+    string classID;
+    string className;
+    string homeroomTeacher;
+    string teacherID;
+    string teacherEmail;
+};
 
-struct Grade { string studentID, courseID; double score10; };
-struct GradeNode { Grade data; GradeNode* next; };
+struct ClassNode {
+    ClassInfo data; 
+    ClassNode* next;
+};
 
-// Con trỏ Head của 4 bảng
+struct Student { 
+    string id;
+    string name;
+    string classID;
+    string schoolName;
+    string dob;
+};
+
+struct StudentNode { 
+    Student data;
+    StudentNode* next; 
+};
+
+struct Course { 
+    string courseID;
+    string courseName;
+    int credits; 
+};
+
+struct CourseNode {
+    Course data; 
+    CourseNode* next;
+};
+
+struct Grade {
+    string studentID;
+    string courseID; 
+    double score10;
+};
+
+struct GradeNode {
+    Grade data;
+    GradeNode* next;
+};
+
+// Con trỏ Head của 4 Linked List
 ClassNode* classHead = nullptr;
 StudentNode* studentHead = nullptr;
 CourseNode* courseHead = nullptr;
 GradeNode* gradeHead = nullptr;
 
-// ==========================================
-// 2. CÁC HÀM TIỆN ÍCH THỦ CÔNG (KHÔNG DÙNG THƯ VIỆN)
-// ==========================================
+// Đã ổn
+
+// 2. CÁC HÀM TIỆN ÍCH
+
 bool isAllDigits(const string& str) {
     if (str.length() == 0) return false;
     for (int i = 0; i < str.length(); i++) {
@@ -38,12 +77,12 @@ bool isAllDigits(const string& str) {
 }
 
 void trim(string &s) {
-    int start = 0;
-    while (start < s.length() && (s[start] == ' ' || s[start] == '\t' || s[start] == '\n' || s[start] == '\r')) start++;
-    int end = s.length() - 1;
-    while (end >= 0 && (s[end] == ' ' || s[end] == '\t' || s[end] == '\n' || s[end] == '\r')) end--;
-    if (start > end) s = "";
-    else s = s.substr(start, end - start + 1);
+    int left = 0;
+    while (left < s.length() && (s[left] == ' ' || s[left] == '\t' || s[left] == '\n' || s[left] == '\r')) left++;
+    int right = s.length() - 1;
+    while (right >= 0 && (s[right] == ' ' || s[right] == '\t' || s[right] == '\n' || s[right] == '\r')) right--;
+    if (left > right) s = "";
+    else s = s.substr(left, right - left + 1);
 }
 
 bool containsSubstring(const string& text, const string& keyword) {
@@ -53,7 +92,7 @@ bool containsSubstring(const string& text, const string& keyword) {
         bool match = true;
         for (int j = 0; j < keyword.length(); j++) {
             char t = text[i + j], k = keyword[j];
-            if (t >= 'A' && t <= 'Z') t += 32;
+            if (t >= 'A' && t <= 'Z') t += 32; // Đưa về chữ thường để thuận tiện so sánh
             if (k >= 'A' && k <= 'Z') k += 32;
             if (t != k) { match = false; break; }
         }
@@ -62,58 +101,82 @@ bool containsSubstring(const string& text, const string& keyword) {
     return false;
 }
 
-string generateEmail(string name, string id) {
+string generateEmail(string name, string id) { // Email mẫu: thanh.pn2418987@sis.hust.edu.vn
     string lowerName = name;
     for (int i = 0; i < lowerName.length(); i++) {
-        if (lowerName[i] >= 'A' && lowerName[i] <= 'Z') lowerName[i] += 32;
+        if (lowerName[i] >= 'A' && lowerName[i] <= 'Z') lowerName[i] += 32; // Đưa tên về chữ thường
     }
-    string words[50]; int wordCount = 0; string currentWord = "";
+    string words[50];
+    int wordCount = 0;
+    string currentWord = "";
     for (int i = 0; i < lowerName.length(); i++) {
         if (lowerName[i] == ' ') {
-            if (currentWord != "") { words[wordCount++] = currentWord; currentWord = ""; }
-        } else currentWord += lowerName[i];
-    }
-    if (currentWord != "") words[wordCount++] = currentWord;
+            if (currentWord != "") {
+                words[wordCount++] = currentWord;
+                currentWord = ""; }
+        } else currentWord += lowerName[i]; // Cắt bỏ họ và tên đệm, chỉ lấy tên chính và chữ cái đầu của họ tên đệm
+    } 
+    if (currentWord != "") words[wordCount++] = currentWord; 
     if (wordCount == 0) return "";
 
-    string emailPrefix = words[wordCount - 1] + ".";
-    for (int i = 0; i < wordCount - 1; ++i) emailPrefix += words[i][0];
-    string idSuffix = id; if (id.length() > 2) idSuffix = id.substr(2);
-    return emailPrefix + idSuffix + "@sis.hust.edu.vn";
+    string emailPrefix = words[wordCount - 1] + "."; // thanh.
+    for (int i = 0; i < wordCount - 1; ++i) emailPrefix += words[i][0]; // thanh.pn
+    string idSuffix = id; if (id.length() > 2) idSuffix = id.substr(2); // Bỏ 2 số đầu của MSSV
+    return emailPrefix + idSuffix + "@sis.hust.edu.vn"; // thanh.pn2418987@sis.hust.edu.vn
 }
 
 double convert10To4(double score10) {
-    if (score10 >= 8.5) return 4.0; if (score10 >= 8.0) return 3.5;
-    if (score10 >= 7.0) return 3.0; if (score10 >= 6.5) return 2.5;
-    if (score10 >= 5.5) return 2.0; if (score10 >= 5.0) return 1.5;
-    if (score10 >= 4.0) return 1.0; return 0.0;
+    if (score10 >= 8.5) return 4.0;
+    if (score10 >= 8.0) return 3.5;
+    if (score10 >= 7.0) return 3.0;
+    if (score10 >= 6.5) return 2.5;
+    if (score10 >= 5.5) return 2.0;
+    if (score10 >= 5.0) return 1.5;
+    if (score10 >= 4.0) return 1.0;
+    return 0.0;
 }
 
 string classifyGPA(double gpa4) {
-    if (gpa4 >= 3.6) return "Xuat sac"; if (gpa4 >= 3.2) return "Gioi";
-    if (gpa4 >= 2.5) return "Kha";      if (gpa4 >= 2.0) return "Trung binh";
-    if (gpa4 > 0) return "Yeu";         return "Chua co diem";
+    if (gpa4 >= 3.6) return "Xuat sac";
+    if (gpa4 >= 3.2) return "Gioi";
+    if (gpa4 >= 2.5) return "Kha";
+    if (gpa4 >= 2.0) return "Trung binh";
+    if (gpa4 > 0) return "Yeu";
+    return "Chua co diem";
 }
 
-// ==========================================
+// Đã ổn
+
 // 3. LOGIC QUẢN LÝ BỘ NHỚ VÀ TÍNH ĐIỂM
-// ==========================================
+
 void addClass(ClassInfo c) {
     ClassNode* newNode = new ClassNode{c, nullptr};
     if (!classHead) classHead = newNode;
-    else { ClassNode* t = classHead; while (t->next) t = t->next; t->next = newNode; }
+    else { 
+        ClassNode* t = classHead;
+        while (t->next) t = t->next;
+        t->next = newNode;
+    }
 }
 
 void addStudentNode(Student s) {
     StudentNode* newNode = new StudentNode{s, nullptr};
     if (!studentHead) studentHead = newNode;
-    else { StudentNode* t = studentHead; while (t->next) t = t->next; t->next = newNode; }
+    else {
+        StudentNode* t = studentHead;
+        while (t->next) t = t->next;
+        t->next = newNode;
+    }
 }
 
 void addCourse(Course c) {
     CourseNode* newNode = new CourseNode{c, nullptr};
     if (!courseHead) courseHead = newNode;
-    else { CourseNode* t = courseHead; while (t->next) t = t->next; t->next = newNode; }
+    else { 
+        CourseNode* t = courseHead; 
+        while (t->next) t = t->next; 
+        t->next = newNode; 
+    }
 }
 
 void addOrUpdateGrade(Grade g) {
@@ -126,22 +189,35 @@ void addOrUpdateGrade(Grade g) {
     }
     GradeNode* newNode = new GradeNode{g, nullptr};
     if (!gradeHead) gradeHead = newNode;
-    else { t = gradeHead; while (t->next) t = t->next; t->next = newNode; }
+    else {
+        t = gradeHead; while (t->next) t = t->next;
+        t->next = newNode;
+    }
 }
 
 Course* getCourse(string courseID) {
     CourseNode* t = courseHead;
-    while (t) { if (t->data.courseID == courseID) return &(t->data); t = t->next; }
+    while (t) {
+        if (t->data.courseID == courseID) {
+            return &(t->data);
+        }
+        t = t->next;
+    }
     return nullptr;
 }
 
 ClassInfo getClassDetails(string classID) {
     ClassNode* t = classHead;
-    while (t) { if (t->data.classID == classID) return t->data; t = t->next; }
+    while (t) {
+        if (t->data.classID == classID) return t->data;
+        t = t->next;
+    }
     return {classID, "Chua cap nhat", "Chua cap nhat", "Chua cap nhat", "Chua cap nhat"};
 }
 
-// Hàm JOIN động: Tính GPA từ 2 bảng Điểm và Môn học
+// Áp dụng kiến thức môn CSDL để tính toán GPA từ bảng Grade và bảng Course, sau đó phân loại GPA theo thang 4.0.
+// Hàm JOIN động: Tính GPA từ 2 bảng Điểm và Môn học.
+
 void calculateGPA(string studentID, double &gpa10, double &gpa4, int &totalCredits) {
     gpa10 = 0.0; gpa4 = 0.0; totalCredits = 0;
     double sum10 = 0.0, sum4 = 0.0;
@@ -171,9 +247,8 @@ void clearAllData() {
     while(gradeHead) { GradeNode* t = gradeHead; gradeHead = gradeHead->next; delete t; }
 }
 
-// ==========================================
-// 4. MODULE FILE I/O (4 FILE)
-// ==========================================
+// 4. MODULE FILE I/O
+
 void loadData() {
     clearAllData();
     ifstream fClass("classes.txt");
@@ -232,20 +307,30 @@ void saveData() {
     fGrade.close();
 }
 
-// ==========================================
-// 5. NGHIỆP VỤ CRUD DANH MỤC
-// ==========================================
-void addStudent() {
+
+// 5. NGHIỆP VỤ CRUD (Create, Read, Update, Delete) DANH MỤC
+
+void addStudent() { // Chưa ổn kiểm tra ràng buộc
     cout << "\n--- THEM SINH VIEN ---\n";
     Student st;
     while (true) {
-        cout << "Nhap MSSV: "; cin >> st.id;
-        if (!isAllDigits(st.id)) { cout << "Loi: MSSV chi chua so!\n"; continue; }
+        cout << "Nhap MSSV: ";
+        cin >> st.id;
+        if (!isAllDigits(st.id)) { 
+            cout << "Loi: MSSV chi chua so!\n";
+            continue;
+        }
+
         bool dup = false;
-        for (StudentNode* t = studentHead; t; t = t->next) if (t->data.id == st.id) dup = true;
-        if (dup) cout << "Loi: MSSV da ton tai!\n"; else break;
+        for (StudentNode* t = studentHead; t; t = t->next) {
+            if (t->data.id == st.id) dup = true; // Duyệt qua danh sách sinh viên để kiểm tra có trùng MSSV không
+        }
+        if (dup) cout << "Loi: MSSV da ton tai!\n";
+        else break;
     }
-    cin.ignore(); cout << "Nhap Ho va Ten: "; getline(cin, st.name); trim(st.name);
+
+    cin.ignore(); cout << "Nhap Ho va Ten: ";
+    getline(cin, st.name); trim(st.name);
     cout << "Nhap Ma lop (VD: IT1-01): "; getline(cin, st.classID); trim(st.classID);
     
     bool cExists = false;
@@ -322,9 +407,8 @@ void inputGrade() {
     addOrUpdateGrade(g); cout << "=> Da cap nhat diem!\n";
 }
 
-// ==========================================
 // 6. MODULE BÁO CÁO & XỬ LÝ
-// ==========================================
+
 void displayStudents() {
     if (!studentHead) { cout << "\nDanh sach trong!\n"; return; }
     cout << "\n" << string(110, '-') << "\n";
@@ -451,9 +535,9 @@ void statistics() {
     cout << "- Chua co diem: " << cd << "\n";
 }
 
-// ==========================================
-// 7. MENU & MAIN
-// ==========================================
+
+// 7. MENU
+
 void showMenu() {
     cout << "\n========================================\n";
     cout << "   HE THONG QUAN LY DAO TAO (MINI SIS)  \n";
@@ -474,6 +558,8 @@ void showMenu() {
     cout << "========================================\n";
     cout << "Nhap lua chon: ";
 }
+
+// 8. MAIN
 
 int main() {
     loadData(); 
