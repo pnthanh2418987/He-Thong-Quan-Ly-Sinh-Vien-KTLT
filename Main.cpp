@@ -422,11 +422,19 @@ void saveData() {
     fGrade.close();
 }
 
+//Tạm ổn
 
 // 5. NGHIỆP VỤ CRUD (Create, Read, Update, Delete) DANH MỤC
 
 void addStudent() { // Tạm ổn phần ràng buộc dữ liệu
     cout << "\n--- THEM SINH VIEN ---\n";
+    cout << "1. Nhap thu cong\n2. Import tu File (.txt)\nLua chon: ";
+    int choice; cin >> choice; cin.ignore(10000, '\n');
+    if (choice == 2) {
+        string fname; cout << "Nhap ten file: "; cin >> fname; 
+        importStudentsFromFile(fname); 
+        return;
+    }
     Student st;
     cin.ignore(10000, '\n'); 
 
@@ -542,48 +550,121 @@ void updateStudent() {
     cout << "Loi: Khong tim thay sinh vien!\n";
 }
 
+void deleteGradesByStudentID(string studentID) {
+    while (gradeHead && gradeHead->data.studentID == studentID) {
+        GradeNode* temp = gradeHead;
+        gradeHead = gradeHead->next;
+        delete temp;
+    }
+    GradeNode* curr = gradeHead;
+    while (curr && curr->next) {
+        if (curr->next->data.studentID == studentID) {
+            GradeNode* temp = curr->next;
+            curr->next = curr->next->next;
+            delete temp;
+        } else {
+            curr = curr->next;
+        }
+    }
+}
+
+Course* getCourse(string courseID) {
+    CourseNode* t = courseHead;
+    while (t) {
+        if (t->data.courseID == courseID) {
+            return &(t->data);
+        }
+        t = t->next;
+    }
+    return nullptr;
+}
+
 void deleteStudent() {
     string id; cout << "Nhap MSSV can xoa: "; cin >> id;
     if (!studentHead) return;
     
     if (studentHead->data.id == id) {
         StudentNode* temp = studentHead; studentHead = studentHead->next; delete temp;
-        cout << "=> Da xoa sinh vien!\n"; return;
+        deleteGradesByStudentID(id); // Dọn dẹp cả điểm của sinh viên bị xóa
+        cout << "=> Da xoa sinh vien va cac diem lien quan!\n"; return;
     }
     for (StudentNode* curr = studentHead; curr->next; curr = curr->next) {
         if (curr->next->data.id == id) {
             StudentNode* temp = curr->next; curr->next = curr->next->next; delete temp;
-            cout << "=> Da xoa sinh vien!\n"; return;
+            deleteGradesByStudentID(id);
+            cout << "=> Da xoa sinh vien va cac diem lien quan!\n"; return;
         }
     }
     cout << "Khong tim thay!\n";
 }
 
 void updateClassInfo() {
-    string id; cout << "Nhap Ma lop can sua: "; cin >> id; cin.ignore(10000, '\n');
-    for (ClassNode* c = classHead; c; c = c->next) {
-        if (c->data.classID == id) {
-            while (true) {
-                cout << "Nhap Ten lop moi: "; getline(cin, c->data.className);
-                cleanSpaces(c->data.className);
-                if (!c->data.className.empty()) break;
+    cout << "\n--- QUAN LY LOP HOC ---\n";
+    cout << "1. Them Lop thu cong\n2. Import tu File (.txt)\n3. Sua thong tin lop\nLua chon: ";
+    int choice; cin >> choice; cin.ignore(10000, '\n');
+    
+    if (choice == 2) {
+        string fname; cout << "Nhap ten file: "; cin >> fname; 
+        importClassesFromFile(fname); 
+        return;
+    } else if (choice == 1) {
+        ClassInfo nc;
+        cout << "Nhap Ma lop: ";
+        getline(cin, nc.classID); trim(nc.classID);
+        for(ClassNode* t = classHead; t; t = t->next) 
+            if(t->data.classID == nc.classID) { cout << "Loi: Lop da ton tai!\n"; return; }
+        
+        cout << "Nhap Ten lop: ";
+        getline(cin, nc.className);
+        cleanSpaces(nc.className);
+
+        cout << "Nhap Ten GVCN: ";
+        getline(cin, nc.homeroomTeacher);
+        formatName(nc.homeroomTeacher);
+
+        cout << "Nhap Ma GVCN: ";
+        getline(cin, nc.teacherID); trim(nc.teacherID);
+
+        cout << "Nhap Email GVCN: ";
+        getline(cin, nc.teacherEmail); trim(nc.teacherEmail);
+        addClass(nc); 
+
+        cout << "=> Them lop thanh cong!\n";
+        return;
+    } else if (choice == 3) {
+        string id; cout << "Nhap Ma lop can sua: ";
+        getline(cin, id); trim(id);
+        for (ClassNode* c = classHead; c; c = c->next) {
+            if (c->data.classID == id) {
+                while (true) {
+                    cout << "Nhap Ten lop moi: ";
+                    getline(cin, c->data.className);
+                    cleanSpaces(c->data.className);
+                    if (!c->data.className.empty()) break;
+                }
+                while (true) {
+                    cout << "Nhap Ten GVCN: ";
+                    getline(cin, c->data.homeroomTeacher); formatName(c->data.homeroomTeacher);
+                    if (isValidName(c->data.homeroomTeacher)) break;
+                    cout << "Loi: Ten khong duoc chua ki tu dac biet hoac so!\n";
+                }
+                cout << "=> Sua lop va chuan hoa thong tin thanh cong!\n"; return;
             }
-            while (true) {
-                cout << "Nhap Ten GVCN: "; getline(cin, c->data.homeroomTeacher);
-                formatName(c->data.homeroomTeacher);
-                if (isValidName(c->data.homeroomTeacher)) break;
-                cout << "Loi: Ten khong duoc chua ki tu dac biet hoac so!\n";
-            }
-            cout << "=> Sua lop va chuan hoa thong tin thanh cong!\n"; return;
         }
+        cout << "Loi: Khong tim thay Lop!\n";
     }
-    cout << "Loi: Khong tim thay Lop!\n";
 }
 
 void inputCourse() {
     Course c; 
     cout << "\n--- THEM MON HOC ---\n";
-    cin.ignore(10000, '\n');
+    cout << "1. Nhap thu cong\n2. Import tu File (.txt)\nLua chon: ";
+    int choice; cin >> choice; cin.ignore(10000, '\n');
+    if (choice == 2) {
+        string fname; cout << "Nhap ten file: "; cin >> fname; 
+        importCoursesFromFile(fname); 
+        return;
+    }
     while (true) {
         cout << "Nhap Ma mon (Khong khoang trang): ";
         getline(cin, c.courseID); trim(c.courseID);
@@ -617,6 +698,15 @@ void inputCourse() {
 void inputGrade() {
     Grade g; 
     cout << "\n--- NHAP DIEM ---\n";
+    
+    // --- CHÈN ĐOẠN NÀY VÀO ---
+    cout << "1. Nhap thu cong\n2. Import tu File (.txt)\nLua chon: ";
+    int choice; cin >> choice; cin.ignore(10000, '\n');
+    if (choice == 2) {
+        string fname; cout << "Nhap ten file: "; cin >> fname; 
+        importGradesFromFile(fname); 
+        return;
+    }
     cout << "Nhap MSSV: "; cin >> g.studentID; cin.ignore(10000, '\n');
     
     bool found = false; 
@@ -655,6 +745,77 @@ void inputGrade() {
     
     addOrUpdateGrade(g); 
     cout << "=> Da cap nhat diem cho hoc ky " << g.semester << " thanh cong!\n";
+}
+
+
+// CÁC HÀM IMPORT DỮ LIỆU TỪ FILE
+
+void importClassesFromFile(string filename) {
+    ifstream file(filename);
+    if (!file.is_open()) { cout << "Loi: Khong the mo file " << filename << "!\n"; return; }
+    ClassInfo c; int count = 0;
+    while (getline(file, c.classID)) {
+        trim(c.classID); if (c.classID.empty()) continue;
+        getline(file, c.className); trim(c.className);
+        getline(file, c.homeroomTeacher); trim(c.homeroomTeacher);
+        getline(file, c.teacherID); trim(c.teacherID);
+        getline(file, c.teacherEmail); trim(c.teacherEmail);
+        
+        bool dup = false;
+        for (ClassNode* t = classHead; t; t=t->next) if (t->data.classID == c.classID) dup=true;
+        if (!dup) { addClass(c); count++; }
+    }
+    file.close(); cout << "=> Da import thanh cong " << count << " lop hoc!\n";
+}
+
+void importStudentsFromFile(string filename) {
+    ifstream file(filename);
+    if (!file.is_open()) { cout << "Loi: Khong the mo file " << filename << "!\n"; return; }
+    Student st; int count = 0;
+    while (file >> st.id) {
+        file.ignore(10000, '\n'); trim(st.id);
+        getline(file, st.name); trim(st.name);
+        getline(file, st.classID); trim(st.classID);
+        getline(file, st.schoolName); trim(st.schoolName);
+        getline(file, st.dob); trim(st.dob);
+        
+        bool dup = false;
+        for (StudentNode* t = studentHead; t; t=t->next) if (t->data.id == st.id) dup=true;
+        if (!dup) {
+            // Tự động tạo lớp rỗng nếu mã lớp chưa tồn tại
+            bool cExists = false;
+            for (ClassNode* t = classHead; t; t=t->next) if (t->data.classID == st.classID) cExists = true;
+            if (!cExists) addClass({st.classID, "Chua cap nhat", "Chua cap nhat", "Chua cap nhat", "Chua cap nhat"});
+            addStudentNode(st); count++;
+        }
+    }
+    file.close(); cout << "=> Da import thanh cong " << count << " sinh vien!\n";
+}
+
+void importCoursesFromFile(string filename) {
+    ifstream file(filename);
+    if (!file.is_open()) { cout << "Loi: Khong the mo file " << filename << "!\n"; return; }
+    Course c; int count = 0;
+    while (file >> c.courseID) {
+        file.ignore(10000, '\n'); trim(c.courseID);
+        getline(file, c.courseName); trim(c.courseName);
+        file >> c.credits; file.ignore(10000, '\n');
+        
+        bool dup = false;
+        for (CourseNode* t = courseHead; t; t=t->next) if (t->data.courseID == c.courseID) dup=true;
+        if (!dup) { addCourse(c); count++; }
+    }
+    file.close(); cout << "=> Da import thanh cong " << count << " mon hoc!\n";
+}
+
+void importGradesFromFile(string filename) {
+    ifstream file(filename);
+    if (!file.is_open()) { cout << "Loi: Khong the mo file " << filename << "!\n"; return; }
+    Grade g; int count = 0;
+    while (file >> g.studentID >> g.courseID >> g.semester >> g.score10) {
+        addOrUpdateGrade(g); count++;
+    }
+    file.close(); cout << "=> Da import/cap nhat thanh cong " << count << " cot diem!\n";
 }
 
 // Tạm ổn
@@ -860,6 +1021,8 @@ void statistics() {
     cout << "- Chua co diem: " << cd << "\n";
 }
 
+
+// 7. MENU
 
 // 7. MENU
 
