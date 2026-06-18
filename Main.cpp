@@ -507,7 +507,6 @@ void addStudent() { // Tạm ổn phần ràng buộc dữ liệu
         return;
     }
     Student st;
-    cin.ignore(10000, '\n'); 
 
     while (true) {
         cout << "Nhap MSSV: "; getline(cin, st.id); trim(st.id);
@@ -905,6 +904,14 @@ void splitList(StudentNode* source, StudentNode** frontRef, StudentNode** backRe
     slow->next = nullptr;
 }
 
+string getFirstName(const string& fullName) {
+    size_t lastSpace = fullName.find_last_of(" ");
+    if (lastSpace == string::npos) {
+        return fullName;
+    }
+    return fullName.substr(lastSpace + 1);
+}
+
 StudentNode* sortedMerge(StudentNode* a, StudentNode* b, int criteria) {
     if (!a) return b;
     if (!b) return a;
@@ -913,16 +920,20 @@ StudentNode* sortedMerge(StudentNode* a, StudentNode* b, int criteria) {
     bool condition = false; 
     
     if (criteria == 1) {
-        condition = (a->data.name <= b->data.name);
+        string firstNameA = getFirstName(a->data.name);
+        string firstNameB = getFirstName(b->data.name);
+        
+        if (firstNameA == firstNameB) {
+            condition = (a->data.name <= b->data.name);
+        } else {
+            condition = (firstNameA <= firstNameB);
+        }
     } 
     else if (criteria == 2) {
         double g10_a, g4_a, g10_b, g4_b; int tc;
         calculateGPA(a->data.id, "", g10_a, g4_a, tc);
         calculateGPA(b->data.id, "", g10_b, g4_b, tc);
         condition = (g4_a >= g4_b); 
-    } 
-    else if (criteria == 3) {
-        condition = (a->data.id <= b->data.id);
     }
 
     if (condition) {
@@ -960,16 +971,10 @@ void sortByGPA() {
     cout << "=> Da sap xep theo GPA Giam dan!\n";
 }
 
-void sortByID() {
-    mergeSort(&studentHead, 3);
-    cout << "=> Da sap xep theo MSSV!\n";
-}
-
 void statistics() {
     int xs = 0, gioi = 0, kha = 0, tb = 0, yeu = 0, cd = 0, total = 0;
     for (StudentNode* s = studentHead; s; s = s->next) {
         double gpa10, gpa4; int tc; 
-        // SỬA TẠI ĐÂY: Thêm "" để tính GPA tích lũy phục vụ thống kê
         calculateGPA(s->data.id, "", gpa10, gpa4, tc); 
         
         string loai = classifyGPA(gpa4);
@@ -988,10 +993,10 @@ void statistics() {
     cout << "- Chua co diem: " << cd << "\n";
 }
 
+// Tạm ổn
 
 // 7. MENU
 
-// 7. MENU
 
 void showMenu() {
     cout << "\n========================================\n";
@@ -1013,6 +1018,8 @@ void showMenu() {
     cout << "========================================\n";
     cout << "Nhap lua chon: ";
 }
+
+// Đã ổn 
 
 // 8. MAIN
 
@@ -1045,3 +1052,7 @@ int main() {
     } while (choice != 0);
     return 0;
 }
+
+//Đã ổn
+
+//Lần cuối test: Phạm Ngọc Thành 20:00 18/6
