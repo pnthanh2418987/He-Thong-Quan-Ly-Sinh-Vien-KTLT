@@ -1,7 +1,12 @@
+202418987
+Pham Ngoc Thanh
+MI04-K69
+Khoa Toan Tin
+04/02/2006
 202418001
 Nguyen Van An
 IT1-01
-Truong Cong nghe Thong tin va Truyen thong
+Truong CNTT
 15/08/2005
 202418002
 Tran Thi Binh
@@ -20,11 +25,126 @@ Khoa Toan Tin
 12/12/2005
 202418005
 Vu Van Em
-CH-01
-Truong Hoa va Khoa hoc Su song
-30/04/2005
-202418987
-Pham Ngoc Thanh
 MI04-K69
 Khoa Toan Tin
-04/02/2006
+30/04/2005
+202418006
+Do Hoang Anh
+IT1-01
+Truong CNTT
+15/05/2006
+202418007
+Pham Doan Duc Anh
+IT1-01
+Truong CNTT
+10/08/2006
+202418008
+Vu Hoang Viet Anh
+IT1-01
+Truong CNTT
+20/11/2006
+202418009
+Nguyen Dinh Bach
+IT1-01
+Truong CNTT
+01/02/2006
+202418010
+Hoang Van Bao
+IT1-01
+Truong CNTT
+14/07/2006
+202418011
+Nguyen Phuong Binh
+ME-02
+Truong Co khi
+25/09/2006
+202418012
+Lo Quoc Dat
+ME-02
+Truong Co khi
+05/01/2006
+202418013
+Nguyen Minh Duc
+ME-02
+Truong Co khi
+12/03/2006
+202418014
+Pham Minh Duc
+ME-02
+Truong Co khi
+22/04/2005
+202418015
+Nguyen Viet Dung
+EE-E8
+Vien Dien
+08/06/2006
+202418016
+Pham Tien Dung
+EE-E8
+Vien Dien
+19/10/2006
+202418017
+Truong Hai Duong
+EE-E8
+Vien Dien
+30/12/2006
+202418018
+Vu Truong Giang
+MI1-03
+Khoa Toan Tin
+11/02/2006
+202418019
+Bui Hoang Hai
+MI1-03
+Khoa Toan Tin
+03/05/2006
+202418020
+Dang Minh Hien
+MI1-03
+Khoa Toan Tin
+17/08/2006
+202418021
+Dam Minh Hieu
+MI1-03
+Khoa Toan Tin
+29/09/2005
+202418022
+Nguyen Duc Hoa
+MI1-03
+Khoa Toan Tin
+04/11/2006
+202418023
+Dang Van Hung
+MI04-K69
+Khoa Toan Tin
+07/01/2006
+202418024
+Do Quang Huy
+MI04-K69
+Khoa Toan Tin
+21/03/2006
+202418025
+Nguyen Duc Huy
+MI04-K69
+Khoa Toan Tin
+14/06/2006
+202418026
+Truong Quang Khai
+MI04-K69
+Khoa Toan Tin
+02/02/2006
+202418027
+Nguyen Trong Khanh
+MI04-K69
+Khoa Toan Tin
+09/09/2006
+202418028
+Tran Quang Minh
+ME-02
+Truong Co khi
+25/12/2005
+202418029
+Nguyen Bao Nam
+ME-02
+Truong Co khi
+16/04/2006

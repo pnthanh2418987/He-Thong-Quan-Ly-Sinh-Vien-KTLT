@@ -2,6 +2,7 @@
 #include <string>
 #include <fstream>
 #include <iomanip>
+#include <cctype>
 
 using namespace std;
 
@@ -426,6 +427,76 @@ void saveData() {
 
 // 5. NGHIỆP VỤ CRUD (Create, Read, Update, Delete) DANH MỤC
 
+// CÁC HÀM IMPORT DỮ LIỆU TỪ FILE
+
+void importClassesFromFile(string filename) {
+    ifstream file(filename);
+    if (!file.is_open()) { cout << "Loi: Khong the mo file " << filename << "!\n"; return; }
+    ClassInfo c; int count = 0;
+    while (getline(file, c.classID)) {
+        trim(c.classID); if (c.classID.empty()) continue;
+        getline(file, c.className); trim(c.className);
+        getline(file, c.homeroomTeacher); trim(c.homeroomTeacher);
+        getline(file, c.teacherID); trim(c.teacherID);
+        getline(file, c.teacherEmail); trim(c.teacherEmail);
+        
+        bool dup = false;
+        for (ClassNode* t = classHead; t; t=t->next) if (t->data.classID == c.classID) dup=true;
+        if (!dup) { addClass(c); count++; }
+    }
+    file.close(); cout << "=> Da import thanh cong " << count << " lop hoc!\n";
+}
+
+void importStudentsFromFile(string filename) {
+    ifstream file(filename);
+    if (!file.is_open()) { cout << "Loi: Khong the mo file " << filename << "!\n"; return; }
+    Student st; int count = 0;
+    while (file >> st.id) {
+        file.ignore(10000, '\n'); trim(st.id);
+        getline(file, st.name); trim(st.name);
+        getline(file, st.classID); trim(st.classID);
+        getline(file, st.schoolName); trim(st.schoolName);
+        getline(file, st.dob); trim(st.dob);
+        
+        bool dup = false;
+        for (StudentNode* t = studentHead; t; t=t->next) if (t->data.id == st.id) dup=true;
+        if (!dup) {
+            // Tự động tạo lớp rỗng nếu mã lớp chưa tồn tại
+            bool cExists = false;
+            for (ClassNode* t = classHead; t; t=t->next) if (t->data.classID == st.classID) cExists = true;
+            if (!cExists) addClass({st.classID, "Chua cap nhat", "Chua cap nhat", "Chua cap nhat", "Chua cap nhat"});
+            addStudentNode(st); count++;
+        }
+    }
+    file.close(); cout << "=> Da import thanh cong " << count << " sinh vien!\n";
+}
+
+void importCoursesFromFile(string filename) {
+    ifstream file(filename);
+    if (!file.is_open()) { cout << "Loi: Khong the mo file " << filename << "!\n"; return; }
+    Course c; int count = 0;
+    while (file >> c.courseID) {
+        file.ignore(10000, '\n'); trim(c.courseID);
+        getline(file, c.courseName); trim(c.courseName);
+        file >> c.credits; file.ignore(10000, '\n');
+        
+        bool dup = false;
+        for (CourseNode* t = courseHead; t; t=t->next) if (t->data.courseID == c.courseID) dup=true;
+        if (!dup) { addCourse(c); count++; }
+    }
+    file.close(); cout << "=> Da import thanh cong " << count << " mon hoc!\n";
+}
+
+void importGradesFromFile(string filename) {
+    ifstream file(filename);
+    if (!file.is_open()) { cout << "Loi: Khong the mo file " << filename << "!\n"; return; }
+    Grade g; int count = 0;
+    while (file >> g.studentID >> g.courseID >> g.semester >> g.score10) {
+        addOrUpdateGrade(g); count++;
+    }
+    file.close(); cout << "=> Da import/cap nhat thanh cong " << count << " cot diem!\n";
+}
+
 void addStudent() { // Tạm ổn phần ràng buộc dữ liệu
     cout << "\n--- THEM SINH VIEN ---\n";
     cout << "1. Nhap thu cong\n2. Import tu File (.txt)\nLua chon: ";
@@ -469,12 +540,6 @@ void addStudent() { // Tạm ổn phần ràng buộc dữ liệu
         }
         break;
     }
-
-    cin.ignore(); cout << "Nhap Ho va Ten: ";
-    getline(cin, st.name); trim(st.name);
-    cout << "Nhap Ma lop (VD: IT1-01): ";
-    getline(cin, st.classID); trim(st.classID);
-    
     bool cExists = false;
     for (ClassNode* t = classHead; t; t = t->next) if (t->data.classID == st.classID) cExists = true;
     if (!cExists) {
@@ -566,17 +631,6 @@ void deleteGradesByStudentID(string studentID) {
             curr = curr->next;
         }
     }
-}
-
-Course* getCourse(string courseID) {
-    CourseNode* t = courseHead;
-    while (t) {
-        if (t->data.courseID == courseID) {
-            return &(t->data);
-        }
-        t = t->next;
-    }
-    return nullptr;
 }
 
 void deleteStudent() {
@@ -747,77 +801,6 @@ void inputGrade() {
     cout << "=> Da cap nhat diem cho hoc ky " << g.semester << " thanh cong!\n";
 }
 
-
-// CÁC HÀM IMPORT DỮ LIỆU TỪ FILE
-
-void importClassesFromFile(string filename) {
-    ifstream file(filename);
-    if (!file.is_open()) { cout << "Loi: Khong the mo file " << filename << "!\n"; return; }
-    ClassInfo c; int count = 0;
-    while (getline(file, c.classID)) {
-        trim(c.classID); if (c.classID.empty()) continue;
-        getline(file, c.className); trim(c.className);
-        getline(file, c.homeroomTeacher); trim(c.homeroomTeacher);
-        getline(file, c.teacherID); trim(c.teacherID);
-        getline(file, c.teacherEmail); trim(c.teacherEmail);
-        
-        bool dup = false;
-        for (ClassNode* t = classHead; t; t=t->next) if (t->data.classID == c.classID) dup=true;
-        if (!dup) { addClass(c); count++; }
-    }
-    file.close(); cout << "=> Da import thanh cong " << count << " lop hoc!\n";
-}
-
-void importStudentsFromFile(string filename) {
-    ifstream file(filename);
-    if (!file.is_open()) { cout << "Loi: Khong the mo file " << filename << "!\n"; return; }
-    Student st; int count = 0;
-    while (file >> st.id) {
-        file.ignore(10000, '\n'); trim(st.id);
-        getline(file, st.name); trim(st.name);
-        getline(file, st.classID); trim(st.classID);
-        getline(file, st.schoolName); trim(st.schoolName);
-        getline(file, st.dob); trim(st.dob);
-        
-        bool dup = false;
-        for (StudentNode* t = studentHead; t; t=t->next) if (t->data.id == st.id) dup=true;
-        if (!dup) {
-            // Tự động tạo lớp rỗng nếu mã lớp chưa tồn tại
-            bool cExists = false;
-            for (ClassNode* t = classHead; t; t=t->next) if (t->data.classID == st.classID) cExists = true;
-            if (!cExists) addClass({st.classID, "Chua cap nhat", "Chua cap nhat", "Chua cap nhat", "Chua cap nhat"});
-            addStudentNode(st); count++;
-        }
-    }
-    file.close(); cout << "=> Da import thanh cong " << count << " sinh vien!\n";
-}
-
-void importCoursesFromFile(string filename) {
-    ifstream file(filename);
-    if (!file.is_open()) { cout << "Loi: Khong the mo file " << filename << "!\n"; return; }
-    Course c; int count = 0;
-    while (file >> c.courseID) {
-        file.ignore(10000, '\n'); trim(c.courseID);
-        getline(file, c.courseName); trim(c.courseName);
-        file >> c.credits; file.ignore(10000, '\n');
-        
-        bool dup = false;
-        for (CourseNode* t = courseHead; t; t=t->next) if (t->data.courseID == c.courseID) dup=true;
-        if (!dup) { addCourse(c); count++; }
-    }
-    file.close(); cout << "=> Da import thanh cong " << count << " mon hoc!\n";
-}
-
-void importGradesFromFile(string filename) {
-    ifstream file(filename);
-    if (!file.is_open()) { cout << "Loi: Khong the mo file " << filename << "!\n"; return; }
-    Grade g; int count = 0;
-    while (file >> g.studentID >> g.courseID >> g.semester >> g.score10) {
-        addOrUpdateGrade(g); count++;
-    }
-    file.close(); cout << "=> Da import/cap nhat thanh cong " << count << " cot diem!\n";
-}
-
 // Tạm ổn
 
 // 6. MODULE BÁO CÁO & XỬ LÝ
@@ -980,22 +963,6 @@ void sortByGPA() {
 void sortByID() {
     mergeSort(&studentHead, 3);
     cout << "=> Da sap xep theo MSSV!\n";
-}
-
-void sortByName() {
-    if (!studentHead) return;
-    bool swapped; StudentNode *p1, *lptr = nullptr;
-    do {
-        swapped = false; p1 = studentHead;
-        while (p1->next != lptr) {
-            if (p1->data.name > p1->next->data.name) { 
-                Student temp = p1->data; p1->data = p1->next->data; p1->next->data = temp; swapped = true;
-            }
-            p1 = p1->next;
-        }
-        lptr = p1;
-    } while (swapped);
-    cout << "=> Da sap xep theo Ten! Xem lai o Muc 2.\n";
 }
 
 void statistics() {
