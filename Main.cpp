@@ -2,6 +2,7 @@
 #include <string>
 #include <fstream>
 #include <iomanip>
+#include <cmath>
 #include <cctype>
 
 using namespace std;
@@ -9,7 +10,7 @@ using namespace std;
 // 1. CẤU TRÚC DỮ LIỆU (4 LINKED LIST) 
 
 // Áp dụng kiến thức môn CSDL để tạo 4 bảng: ClassInfo (Lớp học),Student (Sinh viên), Course (Môn học), Grade (Điểm).
-// Dùng Linked List để lưu trữ dữ liệu.
+// Áp dụng kiến thức môn CTDLGT để tạo 4 Linked List lưu trữ 4 bảng.
 
 struct ClassInfo { 
     string classID;
@@ -66,7 +67,7 @@ StudentNode* studentHead = nullptr;
 CourseNode* courseHead = nullptr;
 GradeNode* gradeHead = nullptr;
 
-// Đã ổn
+// Đã ổn, đừng sửa pls
 
 // 2. CÁC HÀM TIỆN ÍCH
 
@@ -78,6 +79,7 @@ bool isAllDigits(const string& str) {
     return true;
 }
 
+// Tham khảo removing whitespace from string của StackOverflow.
 void trim(string &s) {
     int left = 0;
     while (left < s.length() && (s[left] == ' ' || s[left] == '\t' || s[left] == '\n' || s[left] == '\r')) left++;
@@ -145,6 +147,7 @@ bool isValidName(const string& name) {
     return true;
 }
 
+
 bool isLeapYear(int year) {
     return (year % 4 == 0 && year % 100 != 0) || (year % 400 == 0);
 }
@@ -160,7 +163,7 @@ bool isValidDate(const string& date) {
     int month = (date[3] - '0') * 10 + (date[4] - '0');
     int year = (date[6] - '0') * 1000 + (date[7] - '0') * 100 + (date[8] - '0') * 10 + (date[9] - '0');
 
-    if (year < 1900 || year > 2100) return false;
+    if (year < 1920 || year > 2020 ) return false;
     if (month < 1 || month > 12) return false;
 
     int daysInMonth[] = { 0, 31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31 };
@@ -169,6 +172,7 @@ bool isValidDate(const string& date) {
     if (day < 1 || day > daysInMonth[month]) return false;
     return true;
 }
+
 bool containsSubstring(const string& text, const string& keyword) {
     if (keyword.length() == 0) return true;
     if (text.length() < keyword.length()) return false;
@@ -230,10 +234,11 @@ string classifyGPA(double gpa4) {
     return "Chua co diem";
 }
 
-// Đã ổn
+// Đã ổn, không sửa gì nữa
 
 // 3. LOGIC QUẢN LÝ BỘ NHỚ VÀ TÍNH ĐIỂM
 
+// Tham khảo slide môn CTDLGT, StackOverflow.
 void addClass(ClassInfo c) {
     ClassNode* newNode = new ClassNode{c, nullptr};
     if (!classHead) classHead = newNode;
@@ -303,13 +308,13 @@ ClassInfo getClassDetails(string classID) {
 // Áp dụng kiến thức môn CSDL để tính toán GPA từ bảng Grade và bảng Course, sau đó phân loại GPA theo thang 4.0.
 // Hàm JOIN động: Tính GPA từ 2 bảng Điểm và Môn học.
 
+// Tham khảo Join 2 linked list StackOverflow.
 void calculateGPA(string studentID, string targetSemester, double &gpa10, double &gpa4, int &totalCredits) {
     gpa10 = 0.0; gpa4 = 0.0; totalCredits = 0;
     double sum10 = 0.0, sum4 = 0.0;
     
     GradeNode* g = gradeHead;
     while (g) {
-        // Kiểm tra xem có thuộc học kỳ mục tiêu không (hoặc đang tính tích lũy)
         if (g->data.studentID == studentID && 
            (targetSemester == "" || g->data.semester == targetSemester)) {
             
@@ -339,7 +344,8 @@ void clearAllData() {
 
 // 4. MODULE FILE I/O
 
-void loadData() {
+// Tham khảo Import/Export Linked List StackOverflow, C++17.
+void loadData() { // Load dữ liệu khi chương trình khởi động.
     clearAllData();
 
     ifstream fClass("classes.txt");
@@ -419,16 +425,17 @@ void saveData() {
     ofstream fGrade("grades.txt");
 
     for (GradeNode* t = gradeHead; t; t = t->next)
-        fGrade << t->data.studentID << "\n" << t->data.courseID << "\n" << t->data.semester << "\n" << t->data.score10 << "\n";
-    fGrade.close();
+{
+    fGrade << t->data.studentID << " "
+           << t->data.courseID << " "
+           << t->data.semester << " "
+           << fixed << setprecision(1)
+           << t->data.score10 << "\n";
+}
 }
 
-//Tạm ổn
-
-// 5. NGHIỆP VỤ CRUD (Create, Read, Update, Delete) DANH MỤC
-
-// CÁC HÀM IMPORT DỮ LIỆU TỪ FILE
-
+// Tham khảo Import/Export Linked List StackOverflow, C++17.
+// Các hàm import từ file txt hỗ trợ input.
 void importClassesFromFile(string filename) {
     ifstream file(filename);
     if (!file.is_open()) { cout << "Loi: Khong the mo file " << filename << "!\n"; return; }
@@ -497,7 +504,11 @@ void importGradesFromFile(string filename) {
     file.close(); cout << "=> Da import/cap nhat thanh cong " << count << " cot diem!\n";
 }
 
-void addStudent() { // Tạm ổn phần ràng buộc dữ liệu
+// Tạm ổn, sửa nếu lỗi nghiêm trọng, chú ý struct mới.
+
+// 5. NGHIỆP VỤ CRUD (Create, Read, Update, Delete) DANH MỤC
+
+void addStudent() { // Tạm ổn phần ràng buộc dữ liệu (Kiểm tra cuối 19/6 10:35)
     cout << "\n--- THEM SINH VIEN ---\n";
     cout << "1. Nhap thu cong\n2. Import tu File (.txt)\nLua chon: ";
     int choice; cin >> choice; cin.ignore(10000, '\n');
@@ -508,18 +519,26 @@ void addStudent() { // Tạm ổn phần ràng buộc dữ liệu
     }
     Student st;
 
-    while (true) {
+    bool check = true; // Flag.
+
+    while (check) {
         cout << "Nhap MSSV: "; getline(cin, st.id); trim(st.id);
         if (!isAllDigits(st.id) || !hasNoSpaces(st.id)) { 
             cout << "Loi: MSSV chi duoc chua so va khong chua khoang trang!\n"; 
             continue; 
         }
+        if (st.id.length() != 8) {
+            cout << "Loi: MSSV phai gom 8 chu so!\n";
+                continue;
+}
+
         bool dup = false;
         for (StudentNode* t = studentHead; t; t = t->next) if (t->data.id == st.id) dup = true;
-        if (dup) cout << "Loi: MSSV da ton tai!\n"; else break;
+        if (dup) cout << "Loi: MSSV da ton tai!\n"; else check = false;
     }
     
-    while (true) {
+    check = true;
+    while (check) {
         cout << "Nhap Ho va Ten: ";
         getline(cin, st.name);
         formatName(st.name);
@@ -527,19 +546,20 @@ void addStudent() { // Tạm ổn phần ràng buộc dữ liệu
             cout << "Loi: Ten khong hop le (khong chua so/ky tu dac biet)!\n";
             continue;
         }
-        break;
+        check = false;
     }
 
-    while (true) {
-        cout << "Nhap Ma lop (VD: IT1-01): ";
+    check = true;
+    while (check) {
+        cout << "Nhap Ma lop: ";
         getline(cin, st.classID); trim(st.classID);
         if (!hasNoSpaces(st.classID)) {
             cout << "Loi: Ma lop khong duoc phep chua khoang trang!\n";
             continue;
         }
-        break;
+        check = false;
     }
-    bool cExists = false;
+    bool cExists = false; // Nhập lần đầu tiên nếu chưa tồn tại.
     for (ClassNode* t = classHead; t; t = t->next) if (t->data.classID == st.classID) cExists = true;
     if (!cExists) {
         ClassInfo nc; nc.classID = st.classID;
@@ -559,8 +579,14 @@ void addStudent() { // Tạm ổn phần ràng buộc dữ liệu
     cout << "Nhap Truong truc thuoc: ";
     getline(cin, st.schoolName); trim(st.schoolName);
 
-    cout << "Nhap Ngay sinh (DD/MM/YYYY): ";
-    getline(cin, st.dob); trim(st.dob);
+    check = true;
+    while(check) {
+        cout << "Nhap Ngay sinh (DD/MM/YYYY): ";
+        getline(cin, st.dob); trim(st.dob);
+
+    if(isValidDate(st.dob)) check = false;
+    else cout << "Loi: Ngay sinh khong hop le!\n";
+}
 
     addStudentNode(st); cout << "=> Them sinh vien thanh cong!\n";
 }
@@ -575,37 +601,46 @@ void updateStudent() {
                  << "3. Cap nhat Ngay sinh\n"
                  << "4. Cap nhat Truong truc thuoc\n"
                  << "Chon chuc nang: ";
-            int sub; cin >> sub; cin.ignore(10000, '\n');
-            
+            int sub;
+            cin >> sub;
+            cin.ignore(10000, '\n');
+
+            bool check = true; // Flag.
+
             if (sub == 1) {
-                while (true) {
+                while (check) {
                     cout << "Nhap Ho Ten moi: ";
                     getline(cin, s->data.name);
                     formatName(s->data.name);
-                    if (isValidName(s->data.name)) break;
+                    if (isValidName(s->data.name)) check = false;
+                    else
                     cout << "Loi: Ten khong hop le!\n";
                 }
             } else if (sub == 2) {
-                while (true) {
+                while (check) {
                     cout << "Nhap Ma lop moi: ";
                     getline(cin, s->data.classID);
                     trim(s->data.classID);
-                    if (hasNoSpaces(s->data.classID)) break;
-                    cout << "Loi: Ma lop khong duoc chua khoang trang!\n";
+                    if (hasNoSpaces(s->data.classID))
+                        check = false;
+                    else
+                        cout << "Loi: Ma lop khong duoc chua khoang trang!\n";
                 }
             } else if (sub == 3) {
-                while (true) {
+                while (check) {
                     cout << "Nhap Ngay sinh moi (DD/MM/YYYY): ";
                     getline(cin, s->data.dob); trim(s->data.dob);
-                    if (isValidDate(s->data.dob)) break;
+                    if (isValidDate(s->data.dob))
+                        check = false;
+                        else
                     cout << "Loi: Ngay sinh sai logic hoac dinh dang!\n";
                 }
             } else if (sub == 4) {
-                while (true) {
+                while (check) {
                     cout << "Nhap Truong truc thuoc moi: ";
                     getline(cin, s->data.schoolName);
                     cleanSpaces(s->data.schoolName);
-                    if (!s->data.schoolName.empty()) break;
+                    if (!s->data.schoolName.empty()) check = false;
                 }
             }
             cout << "=> Cap nhat va chuan hoa ho so xong!\n"; return;
@@ -614,6 +649,7 @@ void updateStudent() {
     cout << "Loi: Khong tim thay sinh vien!\n";
 }
 
+// Kiểm tra hàm này ổn chưa.
 void deleteGradesByStudentID(string studentID) {
     while (gradeHead && gradeHead->data.studentID == studentID) {
         GradeNode* temp = gradeHead;
@@ -689,17 +725,27 @@ void updateClassInfo() {
         getline(cin, id); trim(id);
         for (ClassNode* c = classHead; c; c = c->next) {
             if (c->data.classID == id) {
-                while (true) {
+                bool check = true;
+                while (check) {
                     cout << "Nhap Ten lop moi: ";
                     getline(cin, c->data.className);
                     cleanSpaces(c->data.className);
-                    if (!c->data.className.empty()) break;
+                    if (!c->data.className.empty()) {
+                        check = false;
+                    }
                 }
-                while (true) {
+
+                check = true;
+
+                while (check) {
                     cout << "Nhap Ten GVCN: ";
                     getline(cin, c->data.homeroomTeacher); formatName(c->data.homeroomTeacher);
-                    if (isValidName(c->data.homeroomTeacher)) break;
-                    cout << "Loi: Ten khong duoc chua ki tu dac biet hoac so!\n";
+                    if (isValidName(c->data.homeroomTeacher)) {
+                        check = false;
+}
+                            else {
+                                cout << "Loi: Ten khong duoc chua ki tu dac biet hoac so!\n";
+}
                 }
                 cout << "=> Sua lop va chuan hoa thong tin thanh cong!\n"; return;
             }
@@ -718,7 +764,8 @@ void inputCourse() {
         importCoursesFromFile(fname); 
         return;
     }
-    while (true) {
+    bool check = true;
+    while (check) {
         cout << "Nhap Ma mon (Khong khoang trang): ";
         getline(cin, c.courseID); trim(c.courseID);
         if (!hasNoSpaces(c.courseID)) {
@@ -726,24 +773,31 @@ void inputCourse() {
             continue;
         }
         if (getCourse(c.courseID)) { cout << "Loi: Mon nay da co!\n"; return; }
-        break;
+        check = false;
     }
-    while (true) {
+    check = true;
+    while (check) {
         cout << "Nhap Ten mon: ";
         getline(cin, c.courseName);
         cleanSpaces(c.courseName);
-        if (!c.courseName.empty()) break;
+        if (!c.courseName.empty()) {
+            check = false;
+        }
     }
-    while (true) {
+    check = true;
+    while (check) {
         cout << "Nhap So tin chi (1-10): ";
         string credStr; getline(cin, credStr); trim(credStr);
         if (isAllDigits(credStr) && !credStr.empty()) {
             c.credits = 0;
             for(char ch : credStr) c.credits = c.credits * 10 + (ch - '0');
-            if (c.credits > 0 && c.credits <= 10) break;
-        }
-        cout << "Loi: Tin chi phai la so thuc te (1 - 10)!\n";
-    }
+            if (c.credits > 0 && c.credits <= 10) {
+                check = false;
+}
+                else {
+            cout << "Loi: Tin chi phai trong khoang 1-10!\n";
+}
+}
     addCourse(c); 
     cout << "=> Da them va chuan hoa mon hoc!\n";
 }
@@ -752,7 +806,6 @@ void inputGrade() {
     Grade g; 
     cout << "\n--- NHAP DIEM ---\n";
     
-    // --- CHÈN ĐOẠN NÀY VÀO ---
     cout << "1. Nhap thu cong\n2. Import tu File (.txt)\nLua chon: ";
     int choice; cin >> choice; cin.ignore(10000, '\n');
     if (choice == 2) {
@@ -777,20 +830,24 @@ void inputGrade() {
         return; 
     }
     
-    while (true) {
+    bool check = true; // Flag.
+    while (check) {
         cout << "Nhap Hoc ky (VD: 20251): "; 
         getline(cin, g.semester); trim(g.semester);
         if (!g.semester.empty() && hasNoSpaces(g.semester)) {
-            break;
-        }
-        cout << "Loi: Hoc ky khong duoc de trong va khong chua khoang trang!\n";
+            check = false;
+}
+        else {
+    cout << "Loi: Hoc ky khong duoc de trong va khong chua khoang trang!\n";
+}
     }
     
-    while (true) {
+    check = true;
+    while (check) {
         cout << "Nhap Diem he 10 (0.0 - 10.0): ";
         if (cin >> g.score10 && g.score10 >= 0.0 && g.score10 <= 10.0) {
             cin.ignore(10000, '\n');
-            break;
+            check = false;
         }
         cin.clear(); cin.ignore(10000, '\n');
         cout << "Loi: Diem so phai la chuoi so hop le tu 0.0 den 10.0!\n";
@@ -800,10 +857,11 @@ void inputGrade() {
     cout << "=> Da cap nhat diem cho hoc ky " << g.semester << " thanh cong!\n";
 }
 
-// Tạm ổn
+// Tạm ổn, sửa nếu tự tin.
 
 // 6. MODULE BÁO CÁO & XỬ LÝ
 
+// Chú ý struct mới (Kiểm tra cuối 19/6 10:58)
 void displayStudents() {
     if (!studentHead) { cout << "\nDanh sach trong!\n"; return; }
     cout << "\n" << string(115, '-') << "\n";
@@ -819,11 +877,14 @@ void displayStudents() {
              << setw(15) << s->data.dob << setw(10) << fixed << setprecision(2) << gpa10 
              << setw(10) << gpa4 << classifyGPA(gpa4) << "\n";
     }
-    cout << string(115, '-') << "\n";
+    cout << string(115, '-') << "\n";// Chú ý độ rộng
 }
 
+// Chú ý struct mới (Kiểm tra cuối 19/6 10:58)
 void findAndPrintTranscript() {
-    string kw; cout << "Nhap Ten hoac MSSV can tim: "; cin.ignore(10000, '\n'); getline(cin, kw); trim(kw);
+    string kw; cout << "Nhap Ten hoac MSSV can tim: "; cin.ignore(10000, '\n');
+    getline(cin, kw); trim(kw);
+
     bool found = false;
     for (StudentNode* s = studentHead; s; s = s->next) {
         if (containsSubstring(s->data.name, kw) || containsSubstring(s->data.id, kw)) {
@@ -854,19 +915,20 @@ void findAndPrintTranscript() {
                     }
                 }
             }
-            cout << string(80, '-') << "\n"; // Cập nhật độ rộng
+            cout << string(80, '-') << "\n"; // Chú ý độ rộng
             cout << "Tong TC: " << tc << " | GPA 10: " << fixed << setprecision(2) << gpa10 
                  << " | GPA 4: " << gpa4 << " (" << classifyGPA(gpa4) << ")\n";
-            cout << string(80, '=') << "\n"; // Cập nhật độ rộng
+            cout << string(80, '=') << "\n";
             found = true;
         }
     }
     if (!found) cout << "Khong tim thay ket qua!\n";
 }
+
 void printClassTranscript() {
     string cid; cout << "Nhap Ma Lop can xem (VD: IT1-01): "; cin >> cid;
     cout << "\nBANG DIEM TONG HOP LOP: " << cid << "\n";
-    cout << string(80, '-') << "\n";
+    cout << string(80, '-') << "\n";// Chú ý độ rộng
     cout << left << setw(15) << "MSSV" << setw(25) << "Ho va Ten" << setw(10) << "So TC" 
          << setw(10) << "GPA 10" << setw(10) << "GPA 4" << "Xep loai\n";
     cout << string(80, '-') << "\n";
@@ -885,7 +947,10 @@ void printClassTranscript() {
 }
 
 // Áp dụng kiến thức Câu trúc dữ liệu và giải thuật để sắp xếp danh sách sinh viên theo các tiêu chí khác nhau (Tên, GPA, MSSV) sử dụng thuật toán Merge Sort hoán đổi con trỏ.
+// Tham khảo Merge Sort Linked List StackOverflow,Leetcode, GeeksforGeeks, C++17.
+// Cố gắng đơn giản hoá (Kiểm tra cuối 19/6 11:10)
 
+// Sửa lại để sắp xếp theo tên chính, đừng theo họ.
 void splitList(StudentNode* source, StudentNode** frontRef, StudentNode** backRef) {
     StudentNode* fast;
     StudentNode* slow;
@@ -993,7 +1058,7 @@ void statistics() {
     cout << "- Chua co diem: " << cd << "\n";
 }
 
-// Tạm ổn
+// Tạm ổn, hạn chế sửa.
 
 // 7. MENU
 
@@ -1019,7 +1084,7 @@ void showMenu() {
     cout << "Nhap lua chon: ";
 }
 
-// Đã ổn 
+// Đã ổn, không sửa nữa
 
 // 8. MAIN
 
@@ -1053,6 +1118,6 @@ int main() {
     return 0;
 }
 
-//Đã ổn
+//Đã ổn, không sửa nữa.
 
-//Lần cuối test: Phạm Ngọc Thành 20:00 18/6
+//Lần cuối test: Phạm Ngọc Thành 19/6 20:32
