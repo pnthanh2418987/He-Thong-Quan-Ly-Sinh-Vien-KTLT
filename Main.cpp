@@ -73,7 +73,6 @@ GradeNode* gradeHead = nullptr;
 
 bool isAllDigits(const string& str) {
     if (str.length() == 0) return false;
-    // FIX: Dùng size_t thay cho int để tránh warning
     for (size_t i = 0; i < str.length(); i++) {
         if (str[i] < '0' || str[i] > '9') return false;
     }
@@ -506,8 +505,8 @@ void addStudent() {
             cout << "Loi: MSSV chi duoc chua so va khong chua khoang trang!\n"; 
             continue; 
         }
-        if (st.id.length() != 8) {
-            cout << "Loi: MSSV phai gom 8 chu so!\n";
+        if (st.id.length() != 9) {
+            cout << "Loi: MSSV phai gom 9 chu so!\n";
             continue;
         }
 
