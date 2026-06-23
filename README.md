@@ -1,4 +1,4 @@
-HỆ THỐNG QUẢN LÝ ĐÀO TẠO (MINI SIS)
+HỆ THỐNG QUẢN LÝ SINH VIÊN (MINI SIS)
 
 Một chương trình quản lý sinh viên, lớp học, môn học và điểm số (Mini Student Information System) được viết bằng ngôn ngữ C++. Dự án này là sự kết hợp thực tiễn giữa kiến thức Cấu trúc dữ liệu & Giải thuật (Linked List, Merge Sort) và Cơ sở dữ liệu (Mô hình thực thể liên kết, thao tác JOIN bảng).
 
